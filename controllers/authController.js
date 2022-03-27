@@ -12,12 +12,13 @@ const generateToken = (id) => {
 };
 
 exports.signUp = catchAsync(async (req, res, next) => {
-  const { name, email, password, passwordConfirm } = req.body;
+  const { name, email, password, passwordConfirm, role } = req.body;
   const newUser = await User.create({
     name,
     email,
     password,
     passwordConfirm,
+    role,
   });
 
   const token = generateToken(newUser._id);
@@ -70,15 +71,14 @@ exports.protect = catchAsync(async (req, res, next) => {
   const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
 
   // CHECK IF USER STILL EXISTS
-  const freshUser = await User.findById(decoded.id);
-  if (!freshUser)
+  const currentUser = await User.findById(decoded.id);
+  if (!currentUser)
     return next(
       new AppError('The user belonging to the token no longer exists', 401)
     );
 
   // CHECK IF USER HAS CHANGED THEIR PASSWORD
-
-  if (freshUser.changedPasswordAfter(decoded.iat))
+  if (currentUser.changedPasswordAfter(decoded.iat))
     return next(
       new AppError(
         'The password of the user have been recently changed. Please log in again',
@@ -86,6 +86,17 @@ exports.protect = catchAsync(async (req, res, next) => {
       )
     );
 
-  req.user = freshUser;
+  req.user = currentUser;
   next();
 });
+
+exports.restrictTo = (...roles) => {
+  return (req, res, next) => {
+    if (!roles.includes(req.user.role))
+      next(
+        new AppError('You do not have permission to perform this action', 403)
+      );
+
+    next();
+  };
+};
