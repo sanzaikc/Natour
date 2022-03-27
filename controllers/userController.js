@@ -1,7 +1,15 @@
 const User = require('../models/userModel');
+const catchAsync = require('./../utils/catchAsync');
+const APIParams = require('../utils/apiParams');
 
-exports.getAllUsers = async (req, res, next) => {
-  const users = await User.find();
+exports.getAllUsers = catchAsync(async (req, res, next) => {
+  const params = new APIParams(User.find(), req.query)
+    .filter()
+    .sort()
+    .limitFields()
+    .paginate();
+
+  const users = await params.query;
 
   res.status(200).json({
     status: 'success',
@@ -10,7 +18,7 @@ exports.getAllUsers = async (req, res, next) => {
       users,
     },
   });
-};
+});
 
 exports.createUser = (req, res) => {
   res.status(500).json({
