@@ -31,6 +31,7 @@ const userSchema = new mongoose.Schema({
       message: "The passwords provided didn't matched",
     },
   },
+  passwordChangedAt: Date,
 });
 
 // ENCRPTING PASSWORD
@@ -43,12 +44,21 @@ userSchema.pre('save', async function (next) {
   next();
 });
 
-// INSTANCE METHOD FOR AUTHENTICATING PASSWORD
+// INSTANCE METHODS THAT CAN BE ACCESSED BY DOCUMENT
 userSchema.methods.authenticatePassword = async function (
   candidatePassword,
   userPassword
 ) {
   return await bcrypt.compare(candidatePassword, userPassword);
+};
+
+userSchema.methods.changedPasswordAfter = function (JWTTimeStamp) {
+  if (this.passwordChangedAt) {
+    const changedPasswordTimeStamp = this.passwordChangedAt.getTime() / 1000;
+    return JWTTimeStamp < changedPasswordTimeStamp;
+  }
+
+  return false;
 };
 
 const User = mongoose.model('User', userSchema);
