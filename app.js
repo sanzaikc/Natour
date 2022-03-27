@@ -3,6 +3,7 @@ const morgan = require('morgan');
 
 const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controllers/errorController');
+const authRouter = require('./routes/authRoutes');
 const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
 
@@ -13,8 +14,11 @@ if (process.env.NODE_ENV === 'development') app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.static(`${__dirname}/public`));
 
-app.use('/api/v1/tours', tourRouter);
-app.use('/api/v1/users', userRouter);
+const baseUrl = '/api/v1';
+
+app.use(`${baseUrl}`, authRouter);
+app.use(`${baseUrl}/tours`, tourRouter);
+app.use(`${baseUrl}/users`, userRouter);
 
 // INVALID ROUTE HANLDER
 app.all('*', (req, res, next) => {
