@@ -7,14 +7,14 @@ const catchAsync = require('./../utils/catchAsync');
 const sendEmail = require('./../utils/email');
 const User = require('./../models/userModel');
 
-const generateToken = (id) => {
+const signToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN,
   });
 };
 
-const signTokenAndSendResponse = (user, statusCode, res) => {
-  const token = generateToken(user._id);
+const createResponseWithToken = (user, statusCode, res) => {
+  const token = signToken(user._id);
 
   res.status(statusCode).json({
     status: 'success',
@@ -35,17 +35,7 @@ exports.signUp = catchAsync(async (req, res, next) => {
     role,
   });
 
-  // const token = generateToken(newUser._id);
-
-  // res.status(201).json({
-  //   status: 'success',
-  //   token,
-  //   data: {
-  //     user: newUser,
-  //   },
-  // });
-
-  signTokenAndSendResponse(newUser, 201, res);
+  createResponseWithToken(newUser, 201, res);
 });
 
 exports.login = catchAsync(async (req, res, next) => {
@@ -60,14 +50,7 @@ exports.login = catchAsync(async (req, res, next) => {
     return next(new AppError('Invalid email or password', 401));
   }
 
-  // const token = generateToken(user._id);
-
-  // res.status(200).json({
-  //   status: 'success',
-  //   token,
-  // });
-
-  signTokenAndSendResponse(user, 200, res);
+  createResponseWithToken(user, 200, res);
 });
 
 exports.protect = catchAsync(async (req, res, next) => {
@@ -180,14 +163,7 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
   user.passwordResetExpiresIn = undefined;
   await user.save();
 
-  // const token = generateToken(user._id);
-
-  // res.status(200).json({
-  //   status: 'success',
-  //   token,
-  // });
-
-  signTokenAndSendResponse(user, 200, res);
+  createResponseWithToken(user, 200, res);
 });
 
 exports.updatePassword = catchAsync(async (req, res, next) => {
@@ -205,5 +181,5 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
   user.passwordConfirm = passwordConfirm;
   await user.save();
 
-  signTokenAndSendResponse(user, 200, res);
+  createResponseWithToken(user, 200, res);
 });
