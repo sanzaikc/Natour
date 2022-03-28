@@ -55,6 +55,14 @@ userSchema.pre('save', async function (next) {
   next();
 });
 
+userSchema.pre('save', function (next) {
+  if (this.isNew || !this.isModified('password')) return next();
+
+  this.passwordChangedAt = Date.now() - 1000;
+
+  next();
+});
+
 // INSTANCE METHODS THAT CAN BE ACCESSED BY DOCUMENT
 userSchema.methods.authenticatePassword = async function (
   candidatePassword,
