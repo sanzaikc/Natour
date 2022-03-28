@@ -7,7 +7,7 @@ const router = express.Router();
 
 router
   .route('/')
-  .get(userController.getAllUsers)
+  .get(authController.protect, userController.getAllUsers)
   .post(userController.createUser);
 
 router.patch('/update-me', authController.protect, userController.updateMe);
