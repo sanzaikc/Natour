@@ -13,6 +13,18 @@ const generateToken = (id) => {
   });
 };
 
+const signTokenAndSendResponse = (user, statusCode, res) => {
+  const token = generateToken(user._id);
+
+  res.status(statusCode).json({
+    status: 'success',
+    token,
+    data: {
+      user,
+    },
+  });
+};
+
 exports.signUp = catchAsync(async (req, res, next) => {
   const { name, email, password, passwordConfirm, role } = req.body;
   const newUser = await User.create({
@@ -23,15 +35,17 @@ exports.signUp = catchAsync(async (req, res, next) => {
     role,
   });
 
-  const token = generateToken(newUser._id);
+  // const token = generateToken(newUser._id);
 
-  res.status(201).json({
-    status: 'success',
-    token,
-    data: {
-      user: newUser,
-    },
-  });
+  // res.status(201).json({
+  //   status: 'success',
+  //   token,
+  //   data: {
+  //     user: newUser,
+  //   },
+  // });
+
+  signTokenAndSendResponse(newUser, 201, res);
 });
 
 exports.login = catchAsync(async (req, res, next) => {
@@ -46,12 +60,14 @@ exports.login = catchAsync(async (req, res, next) => {
     return next(new AppError('Invalid email or password', 401));
   }
 
-  const token = generateToken(user._id);
+  // const token = generateToken(user._id);
 
-  res.status(200).json({
-    status: 'success',
-    token,
-  });
+  // res.status(200).json({
+  //   status: 'success',
+  //   token,
+  // });
+
+  signTokenAndSendResponse(user, 200, res);
 });
 
 exports.protect = catchAsync(async (req, res, next) => {
@@ -164,10 +180,30 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
   user.passwordResetExpiresIn = undefined;
   await user.save();
 
-  const token = generateToken(user._id);
+  // const token = generateToken(user._id);
 
-  res.status(200).json({
-    status: 'success',
-    token,
-  });
+  // res.status(200).json({
+  //   status: 'success',
+  //   token,
+  // });
+
+  signTokenAndSendResponse(user, 200, res);
+});
+
+exports.updatePassword = catchAsync(async (req, res, next) => {
+  const { password, passwordConfirm, passwordCurrent } = req.body;
+
+  const user = await User.findById(req.user.id).select('+password');
+
+  if (
+    !user ||
+    !(await user.authenticatePassword(passwordCurrent, user.password))
+  )
+    return next(new AppError('The current password did not matched', 401));
+
+  user.password = password;
+  user.passwordConfirm = passwordConfirm;
+  await user.save();
+
+  signTokenAndSendResponse(user, 200, res);
 });
