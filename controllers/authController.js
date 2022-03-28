@@ -32,7 +32,7 @@ exports.signUp = catchAsync(async (req, res, next) => {
     email,
     password,
     passwordConfirm,
-    role,
+    // role,
   });
 
   createResponseWithToken(newUser, 201, res);
