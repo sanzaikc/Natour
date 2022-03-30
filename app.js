@@ -1,4 +1,5 @@
 const express = require('express');
+const helmet = require('helmet');
 const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
 
@@ -11,9 +12,12 @@ const userRouter = require('./routes/userRoutes');
 
 const app = express();
 
+// SECURITY HTTP HEADERS
+app.use(helmet());
+
 if (process.env.NODE_ENV === 'development') app.use(morgan('dev'));
 
-// RATE LIMIT OF 100 REQUEST PER HOUR
+// RATE LIMIT OF 100 REQUEST PER HOUR FROM SAME API
 const limiter = rateLimit({
   max: 100,
   windowMs: 60 * 60 * 1000,
@@ -21,7 +25,10 @@ const limiter = rateLimit({
 });
 app.use('/api', limiter);
 
-app.use(express.json());
+// BODY PARSER
+app.use(express.json({ limit: '10kb' }));
+
+// SERVER STATIC FILES
 app.use(express.static(`${__dirname}/public`));
 
 // OVERIDING REQUEST OBJECT
