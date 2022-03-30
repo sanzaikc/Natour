@@ -67,6 +67,12 @@ userSchema.pre('save', function (next) {
   next();
 });
 
+// QUERY MIDDLEWARE
+userSchema.pre(/^find/, function (next) {
+  this.find({ active: { $ne: false } });
+  next();
+});
+
 // INSTANCE METHODS THAT CAN BE ACCESSED BY DOCUMENT
 userSchema.methods.authenticatePassword = async function (
   candidatePassword,
