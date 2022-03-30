@@ -1,7 +1,9 @@
 const express = require('express');
 const helmet = require('helmet');
 const morgan = require('morgan');
+const mongoSanitize = require('express-mongo-sanitize');
 const rateLimit = require('express-rate-limit');
+const xss = require('xss-clean');
 
 const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controllers/errorController');
@@ -15,6 +17,7 @@ const app = express();
 // SECURITY HTTP HEADERS
 app.use(helmet());
 
+// DEVELOPMENT LOGGER
 if (process.env.NODE_ENV === 'development') app.use(morgan('dev'));
 
 // RATE LIMIT OF 100 REQUEST PER HOUR FROM SAME API
@@ -27,6 +30,12 @@ app.use('/api', limiter);
 
 // BODY PARSER
 app.use(express.json({ limit: '10kb' }));
+
+// DATA SANITIZATION AGAINST NOSQL QUERY INJECTIONS
+app.use(mongoSanitize());
+
+// DATA SANITIZATION AGAINST XSS
+app.use(xss());
 
 // SERVER STATIC FILES
 app.use(express.static(`${__dirname}/public`));
