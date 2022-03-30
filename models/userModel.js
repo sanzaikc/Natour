@@ -43,6 +43,10 @@ const userSchema = new mongoose.Schema({
   passwordChangedAt: Date,
   passwordResetToken: String,
   passwordResetExpiresIn: Date,
+  active: {
+    type: Boolean,
+    default: true,
+  },
 });
 
 // ENCRPTING PASSWORD
