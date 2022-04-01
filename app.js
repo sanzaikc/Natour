@@ -12,6 +12,7 @@ const globalErrorHandler = require('./controllers/errorController');
 const authRouter = require('./routes/authRoutes');
 const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
+const reviewRouter = require('./routes/reviewRoutes');
 
 const app = express();
 
@@ -65,6 +66,7 @@ const baseUrl = '/api/v1';
 app.use(`${baseUrl}`, authRouter);
 app.use(`${baseUrl}/tours`, tourRouter);
 app.use(`${baseUrl}/users`, userRouter);
+app.use(`${baseUrl}/reviews`, reviewRouter);
 
 // INVALID ROUTE HANLDER
 app.all('*', (req, res, next) => {
