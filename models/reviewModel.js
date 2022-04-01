@@ -10,6 +10,7 @@ const reviewSchema = new mongoose.Schema(
       type: Number,
       min: 1,
       max: 5,
+      default: 4.0,
     },
     createdAt: {
       type: Date,
@@ -31,6 +32,19 @@ const reviewSchema = new mongoose.Schema(
     toObject: { virtuals: true },
   }
 );
+
+// QUERY MIDDEWARES
+reviewSchema.pre(/^find/, async function (next) {
+  this.populate({
+    path: 'tour',
+  }).populate({
+    path: 'user',
+    select:
+      '-__v -passwordChangedAt -passwordResetExpiresIn -passwordResetToken',
+  });
+
+  next();
+});
 
 const Review = mongoose.model('Review', reviewSchema);
 
