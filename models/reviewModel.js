@@ -36,9 +36,6 @@ const reviewSchema = new mongoose.Schema(
 // QUERY MIDDEWARES
 reviewSchema.pre(/^find/, async function (next) {
   this.populate({
-    path: 'tour',
-    select: 'name',
-  }).populate({
     path: 'user',
     select: 'name photo',
   });
