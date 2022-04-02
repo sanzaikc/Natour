@@ -13,7 +13,8 @@ router
 router
   .route('/me')
   .get(authController.protect, userController.getMe, userController.getUser)
-  .patch(authController.protect, userController.updateMe);
+  .patch(authController.protect, userController.updateMe)
+  .delete(authController.protect, userController.deleteMe);
 
 router
   .route('/:id')
