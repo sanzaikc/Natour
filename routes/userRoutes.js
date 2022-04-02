@@ -10,7 +10,10 @@ router
   .get(userController.getAllUsers)
   .post(userController.createUser);
 
-router.patch('/update-me', authController.protect, userController.updateMe);
+router
+  .route('/me')
+  .get(authController.protect, userController.getMe, userController.getUser)
+  .patch(authController.protect, userController.updateMe);
 
 router
   .route('/:id')
