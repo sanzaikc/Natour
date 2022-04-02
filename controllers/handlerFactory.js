@@ -1,5 +1,29 @@
 const AppError = require('../utils/appError');
+const APIParams = require('../utils/apiParams');
 const catchAsync = require('../utils/catchAsync');
+
+exports.getAll = (Model) =>
+  catchAsync(async (req, res, next) => {
+    // If routes include tour id (Review Model)
+    let filter = {};
+    if (req.params.tourId) filter = { tour: req.params.tourId };
+
+    const params = new APIParams(Model.find(filter), req.query)
+      .filter()
+      .sort()
+      .limitFields()
+      .paginate();
+
+    const docs = await params.query;
+
+    res.status(200).json({
+      status: 'success',
+      totalItems: docs.length,
+      data: {
+        data: docs,
+      },
+    });
+  });
 
 exports.getOne = (Model, populateOptions) =>
   catchAsync(async (req, res, next) => {

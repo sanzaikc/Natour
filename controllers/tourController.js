@@ -12,23 +12,24 @@ exports.aliasTopTours = (req, res, next) => {
   next();
 };
 
-exports.getAllTours = catchAsync(async (req, res, next) => {
-  const features = new APIParams(Tour.find(), req.query)
-    .filter()
-    .sort()
-    .limitFields()
-    .paginate();
+exports.getAllTours = factory.getAll(Tour);
+// catchAsync(async (req, res, next) => {
+//   const features = new APIParams(Tour.find(), req.query)
+//     .filter()
+//     .sort()
+//     .limitFields()
+//     .paginate();
 
-  const tours = await features.query;
+//   const tours = await features.query;
 
-  res.status(200).json({
-    status: 'success',
-    totalItems: tours.length,
-    data: {
-      tours,
-    },
-  });
-});
+//   res.status(200).json({
+//     status: 'success',
+//     totalItems: tours.length,
+//     data: {
+//       tours,
+//     },
+//   });
+// });
 
 exports.getTour = factory.getOne(Tour, { path: 'reviews' });
 

@@ -13,24 +13,6 @@ const filterObj = (obj, ...allowedFields) => {
   return filteredObj;
 };
 
-exports.getAllUsers = catchAsync(async (req, res, next) => {
-  const params = new APIParams(User.find(), req.query)
-    .filter()
-    .sort()
-    .limitFields()
-    .paginate();
-
-  const users = await params.query;
-
-  res.status(200).json({
-    status: 'success',
-    totalItems: users.length,
-    data: {
-      users,
-    },
-  });
-});
-
 exports.updateMe = catchAsync(async (req, res, next) => {
   if (req.body.password || req.body.passwordConfirm)
     return next(
@@ -51,6 +33,8 @@ exports.updateMe = catchAsync(async (req, res, next) => {
     },
   });
 });
+
+exports.getAllUsers = factory.getAll(User);
 
 exports.getUser = factory.getOne(User);
 
