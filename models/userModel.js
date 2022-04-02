@@ -43,6 +43,10 @@ const userSchema = new mongoose.Schema({
   passwordChangedAt: Date,
   passwordResetToken: String,
   passwordResetExpiresIn: Date,
+  active: {
+    type: Boolean,
+    default: true,
+  },
 });
 
 // ENCRPTING PASSWORD
@@ -60,6 +64,12 @@ userSchema.pre('save', function (next) {
 
   this.passwordChangedAt = Date.now() - 1000;
 
+  next();
+});
+
+// QUERY MIDDLEWARE
+userSchema.pre(/^find/, function (next) {
+  this.find({ active: { $ne: false } });
   next();
 });
 
