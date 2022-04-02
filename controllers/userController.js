@@ -52,12 +52,7 @@ exports.updateMe = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.getUser = (req, res) => {
-  res.status(500).json({
-    status: 'error',
-    message: 'api under development',
-  });
-};
+exports.getUser = factory.getOne(User);
 
 exports.createUser = factory.createOne(User);
 
