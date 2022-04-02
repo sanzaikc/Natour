@@ -6,7 +6,7 @@ const tourController = require('./../controllers/tourController');
 const router = express.Router();
 const reviewRouter = require('./reviewRoutes');
 
-// Merged routes
+// Nested reviews route
 router.use('/:tourId/reviews', reviewRouter);
 
 router
