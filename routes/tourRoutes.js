@@ -4,6 +4,10 @@ const authController = require('./../controllers/authController');
 const tourController = require('./../controllers/tourController');
 
 const router = express.Router();
+const reviewRouter = require('./reviewRoutes');
+
+// Merged routes
+router.use('/:tourId/reviews', reviewRouter);
 
 router
   .route('/top-5-cheapest')
