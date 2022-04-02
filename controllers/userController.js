@@ -1,6 +1,7 @@
 const APIParams = require('../utils/apiParams');
 const AppError = require('../utils/appError');
 const catchAsync = require('./../utils/catchAsync');
+const factory = require('./handlerFactory');
 const User = require('../models/userModel');
 
 const filterObj = (obj, ...allowedFields) => {
@@ -72,9 +73,4 @@ exports.updateUser = (req, res) => {
   });
 };
 
-exports.deleteUser = (req, res) => {
-  res.status(500).json({
-    status: 'error',
-    message: 'api under development',
-  });
-};
+exports.deleteUser = factory.deleteOne(User);
