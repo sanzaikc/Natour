@@ -15,14 +15,16 @@ router
 
 router.route('/tour-stats').get(tourController.getTourStats);
 
-router.route('/monthly-plan/:year').get(tourController.getMonthlyPlan);
+router
+  .route('/monthly-plan/:year')
+  .get(authController.restrictTo('admin'), tourController.getMonthlyPlan);
 
 router
   .route('/')
   .get(tourController.getAllTours)
   .post(
     authController.protect,
-    authController.restrictTo('admin', 'lead-guide'),
+    authController.restrictTo('admin', 'guide', 'lead-guide'),
     tourController.createTour
   );
 

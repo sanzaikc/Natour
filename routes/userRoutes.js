@@ -5,16 +5,22 @@ const userController = require('./../controllers/userController');
 
 const router = express.Router();
 
+// Allow only authenticated user's access
+router.use(authController.protect);
+
 router
   .route('/')
-  .get(authController.protect, userController.getAllUsers)
+  .get(userController.getAllUsers)
   .post(userController.createUser);
 
 router
   .route('/me')
-  .get(authController.protect, userController.getMe, userController.getUser)
-  .patch(authController.protect, userController.updateMe)
-  .delete(authController.protect, userController.deleteMe);
+  .get(userController.getMe, userController.getUser)
+  .patch(userController.updateMe)
+  .delete(userController.deleteMe);
+
+// Restrict access unless admin
+router.use(authController.restrictTo('admin'));
 
 router
   .route('/:id')

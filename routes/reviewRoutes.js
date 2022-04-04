@@ -6,20 +6,24 @@ const reviewController = require('./../controllers/reviewController');
 //Merging params from tour router
 const router = express.Router({ mergeParams: true });
 
+// Allow only authenticated user's access
+router.use(authController.protect);
+
 router
   .route('/')
   .get(reviewController.getAllReviews)
-  .post(
-    authController.protect,
-    authController.restrictTo('user'),
-    reviewController.setTourReviewParams,
-    reviewController.createReview
-  );
+  .post(reviewController.setTourReviewParams, reviewController.createReview);
 
 router
   .route('/:id')
   .get(reviewController.getReview)
-  .patch(reviewController.updateReview)
-  .delete(reviewController.deleteReview);
+  .patch(
+    authController.restrictTo('admin', 'user'),
+    reviewController.updateReview
+  )
+  .delete(
+    authController.restrictTo('admin', 'user'),
+    reviewController.deleteReview
+  );
 
 module.exports = router;
