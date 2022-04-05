@@ -14,7 +14,8 @@ exports.getAll = (Model) =>
       .limitFields()
       .paginate();
 
-    const docs = await params.query;
+    const docs = await params.query.explain(); // Explains query execution
+    // const docs = await params.query;
 
     res.status(200).json({
       status: 'success',
