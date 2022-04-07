@@ -1,4 +1,3 @@
-const APIParams = require('../utils/apiParams');
 const AppError = require('./../utils/appError');
 const catchAsync = require('./../utils/catchAsync');
 const factory = require('./handlerFactory');
@@ -100,6 +99,36 @@ exports.getMonthlyPlan = catchAsync(async (req, res, next) => {
     totalItems: plans.length,
     data: {
       plans,
+    },
+  });
+});
+
+exports.getToursWithin = catchAsync(async (req, res, next) => {
+  const { distance, latlng, unit } = req.params;
+  const [lat, lng] = latlng.split(',');
+
+  if (!unit) return next(new AppError('Please provide unit in mi or km', 400));
+
+  const radius = unit === 'mi' ? distance / 3963.2 : distance / 6378.1;
+
+  const tours = await Tour.find({
+    startLocation: {
+      $geoWithin: { $centerSphere: [[lng, lat], radius] },
+    },
+  });
+
+  if (!lat || !lng)
+    return next(
+      new AppError('Please provide geo location in the form lat,lng', 400)
+    );
+
+  console.log(distance, lat, lng, unit);
+
+  res.status(200).json({
+    status: 'success',
+    totalItems: tours.length,
+    data: {
+      data: tours,
     },
   });
 });
