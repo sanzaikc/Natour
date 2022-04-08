@@ -13,6 +13,7 @@ const globalErrorHandler = require('./controllers/errorController');
 const authRouter = require('./routes/authRoutes');
 const tourRouter = require('./routes/tourRoutes');
 const reviewRouter = require('./routes/reviewRoutes');
+const viewRouter = require('./routes/viewRoutes');
 const userRouter = require('./routes/userRoutes');
 
 const app = express();
@@ -66,13 +67,10 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use((req, res, next) => {
-  res.status(200).render('base', {
-    tour: 'The Sea Seeker',
-    user: 'Chaos',
-  });
-});
+// VIEW ROUTES
+app.use('/', viewRouter);
 
+// API ROUTES
 const baseUrl = '/api/v1';
 
 app.use(`${baseUrl}`, authRouter);
