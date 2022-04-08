@@ -17,7 +17,7 @@ const reviewRouter = require('./routes/reviewRoutes');
 
 const app = express();
 
-// SETTING UP RENDER ENGINE
+// SETTING UP SERVER-SIDE RENDER ENGINE
 app.set('view engine', 'pug');
 app.set('views', path.join(__dirname, 'views'));
 
