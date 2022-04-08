@@ -109,6 +109,11 @@ exports.getToursWithin = catchAsync(async (req, res, next) => {
 
   if (!unit) return next(new AppError('Please provide unit in mi or km', 400));
 
+  if (!lat || !lng)
+    return next(
+      new AppError('Please provide geo location in the form lat,lng', 400)
+    );
+
   const radius = unit === 'mi' ? distance / 3963.2 : distance / 6378.1;
 
   const tours = await Tour.find({
@@ -117,11 +122,6 @@ exports.getToursWithin = catchAsync(async (req, res, next) => {
     },
   });
 
-  if (!lat || !lng)
-    return next(
-      new AppError('Please provide geo location in the form lat,lng', 400)
-    );
-
   console.log(distance, lat, lng, unit);
 
   res.status(200).json({
@@ -129,6 +129,45 @@ exports.getToursWithin = catchAsync(async (req, res, next) => {
     totalItems: tours.length,
     data: {
       data: tours,
+    },
+  });
+});
+
+exports.getDistances = catchAsync(async (req, res, next) => {
+  const { latlng, unit } = req.params;
+  const [lat, lng] = latlng.split(',');
+
+  if (!unit) return next(new AppError('Please provide unit in mi or km', 400));
+
+  const multiplier = unit === 'km' ? 0.001 : 0.000621371;
+
+  if (!lat || !lng)
+    return next(
+      new AppError('Please provide geo location in the form lat,lng', 400)
+    );
+
+  // NOTE: To aggregate geospatial data we need to make sure there exist a geospatial index in the model
+  const distances = await Tour.aggregate([
+    {
+      $geoNear: {
+        near: { type: 'Point', coordinates: [lng * 1, lat * 1] },
+        distanceField: 'distance',
+        distanceMultiplier: multiplier,
+      },
+    },
+    {
+      $project: {
+        name: 1,
+        distance: 1,
+      },
+    },
+  ]);
+
+  res.status(200).json({
+    status: 'success',
+    totalItems: distances.length,
+    data: {
+      data: distances,
     },
   });
 });
