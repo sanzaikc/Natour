@@ -73,6 +73,7 @@ exports.protect = catchAsync(async (req, res, next) => {
 
   if (authorizationHeader && authorizationHeader.startsWith('Bearer'))
     token = authorizationHeader.split(' ')[1];
+  else if (req.cookies.jwt) token = req.cookies.jwt;
 
   if (!token)
     return next(
@@ -102,6 +103,26 @@ exports.protect = catchAsync(async (req, res, next) => {
     );
 
   req.user = currentUser;
+  next();
+});
+
+exports.isLoggedIn = catchAsync(async (req, res, next) => {
+  if (!req.cookies.jwt) return next();
+
+  const decoded = await promisify(jwt.verify)(
+    req.cookies.jwt,
+    process.env.JWT_SECRET
+  );
+
+  const currentUser = await User.findById(decoded.id);
+
+  if (!currentUser) return next();
+
+  if (currentUser.changedPasswordAfter(decoded.iat)) return next();
+
+  // THERE IS A LOGGED IN USER
+  res.locals.user = currentUser;
+
   next();
 });
 

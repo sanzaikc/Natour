@@ -1,3 +1,4 @@
+const cookieParser = require('cookie-parser');
 const express = require('express');
 const helmet = require('helmet');
 const hpp = require('hpp');
@@ -26,6 +27,7 @@ app.set('views', path.join(__dirname, 'views'));
 const scriptSrcUrls = [
   'https://api.tiles.mapbox.com/',
   'https://api.mapbox.com/',
+  'https://cdnjs.cloudflare.com/ajax/libs/axios/0.26.1/axios.js',
 ];
 const styleSrcUrls = [
   'https://api.mapbox.com/',
@@ -37,6 +39,7 @@ const connectSrcUrls = [
   'https://a.tiles.mapbox.com/',
   'https://b.tiles.mapbox.com/',
   'https://events.mapbox.com/',
+  'https://cdnjs.cloudflare.com/ajax/libs/axios/0.26.1/axios.js',
 ];
 const fontSrcUrls = ['fonts.googleapis.com', 'fonts.gstatic.com'];
 
@@ -68,6 +71,7 @@ app.use('/api', limiter);
 
 // BODY PARSER
 app.use(express.json({ limit: '10kb' }));
+app.use(cookieParser());
 
 // DATA SANITIZATION AGAINST NOSQL QUERY INJECTIONS
 app.use(mongoSanitize());
@@ -94,6 +98,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 // OVERIDING REQUEST OBJECT
 app.use((req, res, next) => {
   req.requestTime = new Date().toISOString();
+  console.log(req.cookies);
   next();
 });
 
