@@ -7,8 +7,6 @@ import { displayMaps } from './mapbox';
 const loginForm = document.querySelector('.form');
 const mapBox = document.getElementById('map');
 
-// VALUES
-
 // DELEGATIONS
 if (mapBox) {
   const locations = JSON.parse(mapBox.dataset.locations);
