@@ -27,7 +27,6 @@ app.set('views', path.join(__dirname, 'views'));
 const scriptSrcUrls = [
   'https://api.tiles.mapbox.com/',
   'https://api.mapbox.com/',
-  'https://cdnjs.cloudflare.com/ajax/libs/axios/0.26.1/axios.js',
 ];
 const styleSrcUrls = [
   'https://api.mapbox.com/',
@@ -39,7 +38,6 @@ const connectSrcUrls = [
   'https://a.tiles.mapbox.com/',
   'https://b.tiles.mapbox.com/',
   'https://events.mapbox.com/',
-  'https://cdnjs.cloudflare.com/ajax/libs/axios/0.26.1/axios.js',
 ];
 const fontSrcUrls = ['fonts.googleapis.com', 'fonts.gstatic.com'];
 
