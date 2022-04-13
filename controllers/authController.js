@@ -67,6 +67,17 @@ exports.login = catchAsync(async (req, res, next) => {
   createResponseWithToken(user, 200, res);
 });
 
+exports.logout = async (req, res) => {
+  res.cookie('jwt', 'logged-out', {
+    expires: new Date(Date.now() + 10 * 1000),
+    httpOnly: true,
+  });
+
+  res.status(200).json({
+    status: 'success',
+  });
+};
+
 exports.protect = catchAsync(async (req, res, next) => {
   let token;
   const authorizationHeader = req.headers.authorization;
@@ -106,25 +117,29 @@ exports.protect = catchAsync(async (req, res, next) => {
   next();
 });
 
-exports.isLoggedIn = catchAsync(async (req, res, next) => {
-  if (!req.cookies.jwt) return next();
+exports.isLoggedIn = async (req, res, next) => {
+  try {
+    if (!req.cookies.jwt) return next();
 
-  const decoded = await promisify(jwt.verify)(
-    req.cookies.jwt,
-    process.env.JWT_SECRET
-  );
+    const decoded = await promisify(jwt.verify)(
+      req.cookies.jwt,
+      process.env.JWT_SECRET
+    );
 
-  const currentUser = await User.findById(decoded.id);
+    const currentUser = await User.findById(decoded.id);
 
-  if (!currentUser) return next();
+    if (!currentUser) return next();
 
-  if (currentUser.changedPasswordAfter(decoded.iat)) return next();
+    if (currentUser.changedPasswordAfter(decoded.iat)) return next();
 
-  // THERE IS A LOGGED IN USER
-  res.locals.user = currentUser;
+    // THERE IS A LOGGED IN USER
+    res.locals.user = currentUser;
+  } catch (err) {
+    return next();
+  }
 
   next();
-});
+};
 
 exports.restrictTo = (...roles) => {
   return (req, res, next) => {
