@@ -3,12 +3,20 @@ const AppError = require('./../utils/appError');
 
 const Tour = require('./../models/tourModel');
 
+// ACCOUNT
 exports.getLoginForm = catchAsync(async (req, res, next) => {
   res.status(200).render('login', {
     title: 'Log into your account',
   });
 });
 
+exports.getAccountDetails = catchAsync(async (req, res, next) => {
+  res.status(200).render('account', {
+    title: 'Account',
+  });
+});
+
+// TOURS
 exports.getOverview = catchAsync(async (req, res, next) => {
   const tours = await Tour.find();
 
