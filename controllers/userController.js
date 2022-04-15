@@ -1,23 +1,27 @@
-const APIParams = require('../utils/apiParams');
-const AppError = require('../utils/appError');
 const catchAsync = require('./../utils/catchAsync');
 const factory = require('./handlerFactory');
 const multer = require('multer');
+const sharp = require('sharp');
+
+const AppError = require('../utils/appError');
+// const APIParams = require('../utils/apiParams');
 const User = require('../models/userModel');
 
 // Multer file upload middleware
 const imageDestination = 'public/img/users/';
 
-const multerStorage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, imageDestination);
-  },
-  filename: function (req, file, cb) {
-    const extension = file.mimetype.split('/')[1];
-    const fileName = `user-${req.user.id}-${Date.now()}.${extension}`;
-    cb(null, fileName);
-  },
-});
+// const multerStorage = multer.diskStorage({
+//   destination: function (req, file, cb) {
+//     cb(null, imageDestination);
+//   },
+//   filename: function (req, file, cb) {
+//     const extension = file.mimetype.split('/')[1];
+//     const fileName = `user-${req.user.id}-${Date.now()}.${extension}`;
+//     cb(null, fileName);
+//   },
+// });
+
+const multerStorage = multer.memoryStorage();
 
 const multerFilter = (req, file, cb) => {
   if (file.mimetype.startsWith('image')) cb(null, true);
@@ -34,6 +38,19 @@ const upload = multer({
 });
 
 exports.uploadUserPhoto = upload.single('photo');
+
+exports.resizeUserPhoto = (req, res, next) => {
+  if (!req.file) return next();
+
+  req.file.filename = `user-${req.user.id}-${Date.now()}.jpeg`;
+  sharp(req.file.buffer)
+    .resize(500, 500, { fit: 'cover' })
+    // .toFormat('jpeg')
+    .jpeg({ quality: 90 })
+    .toFile(`${imageDestination}${req.file.filename}`);
+
+  next();
+};
 
 const filterObj = (obj, ...allowedFields) => {
   let filteredObj = {};
