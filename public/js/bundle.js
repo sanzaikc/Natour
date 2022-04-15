@@ -8878,7 +8878,7 @@ var logout = /*#__PURE__*/function () {
 
             if (res.data.status === 'success') {
               (0, _alert.showAlert)('success', 'Logged out successfully!');
-              location.reload(true);
+              location.assign('/');
             }
 
             _context2.next = 10;
