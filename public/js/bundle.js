@@ -8958,7 +8958,7 @@ function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
 
 var updateProfile = /*#__PURE__*/function () {
-  var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(name, email) {
+  var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(formData) {
     var res;
     return regeneratorRuntime.wrap(function _callee$(_context) {
       while (1) {
@@ -8969,10 +8969,7 @@ var updateProfile = /*#__PURE__*/function () {
             return (0, _axios.default)({
               method: 'PATCH',
               url: 'http://127.0.0.1:3000/api/v1/users/me',
-              data: {
-                name: name,
-                email: email
-              }
+              data: formData
             });
 
           case 3:
@@ -9001,7 +8998,7 @@ var updateProfile = /*#__PURE__*/function () {
     }, _callee, null, [[0, 7]]);
   }));
 
-  return function updateProfile(_x, _x2) {
+  return function updateProfile(_x) {
     return _ref.apply(this, arguments);
   };
 }();
@@ -9053,7 +9050,7 @@ var updatePassword = /*#__PURE__*/function () {
     }, _callee2, null, [[0, 7]]);
   }));
 
-  return function updatePassword(_x3, _x4, _x5) {
+  return function updatePassword(_x2, _x3, _x4) {
     return _ref2.apply(this, arguments);
   };
 }();
@@ -9358,9 +9355,11 @@ if (logoutBth) logoutBth.addEventListener('click', _auth.logout);
 if (userDataForm) {
   userDataForm.addEventListener('submit', function (e) {
     e.preventDefault();
-    var name = document.getElementById('name').value;
-    var email = document.getElementById('email').value;
-    (0, _updateSettings.updateProfile)(name, email);
+    var form = new FormData();
+    form.append('name', document.getElementById('name').value);
+    form.append('email', document.getElementById('email').value);
+    form.append('photo', document.getElementById('photo').files[0]);
+    (0, _updateSettings.updateProfile)(form);
   });
 }
 
@@ -9402,7 +9401,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "51192" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "65223" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

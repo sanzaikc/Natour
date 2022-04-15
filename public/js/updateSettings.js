@@ -2,15 +2,12 @@ import axios from 'axios';
 
 import { showAlert } from './alert';
 
-export const updateProfile = async (name, email) => {
+export const updateProfile = async (formData) => {
   try {
     const res = await axios({
       method: 'PATCH',
       url: 'http://127.0.0.1:3000/api/v1/users/me',
-      data: {
-        name,
-        email,
-      },
+      data: formData,
     });
 
     if (res.status === 200) {
