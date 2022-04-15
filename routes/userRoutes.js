@@ -16,7 +16,7 @@ router
 router
   .route('/me')
   .get(userController.getMe, userController.getUser)
-  .patch(userController.updateMe)
+  .patch(userController.uploadUserPhoto, userController.updateMe)
   .delete(userController.deleteMe);
 
 // Restrict access unless admin

@@ -2,7 +2,38 @@ const APIParams = require('../utils/apiParams');
 const AppError = require('../utils/appError');
 const catchAsync = require('./../utils/catchAsync');
 const factory = require('./handlerFactory');
+const multer = require('multer');
 const User = require('../models/userModel');
+
+// Multer file upload middleware
+const imageDestination = 'public/img/users/';
+
+const multerStorage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, imageDestination);
+  },
+  filename: function (req, file, cb) {
+    const extension = file.mimetype.split('/')[1];
+    const fileName = `user-${req.user.id}-${Date.now()}.${extension}`;
+    cb(null, fileName);
+  },
+});
+
+const multerFilter = (req, file, cb) => {
+  if (file.mimetype.startsWith('image')) cb(null, true);
+  else
+    cb(
+      new AppError('Not an image! Please upload image files only', 400),
+      false
+    );
+};
+
+const upload = multer({
+  storage: multerStorage,
+  fileFilter: multerFilter,
+});
+
+exports.uploadUserPhoto = upload.single('photo');
 
 const filterObj = (obj, ...allowedFields) => {
   let filteredObj = {};
@@ -25,6 +56,7 @@ exports.updateMe = catchAsync(async (req, res, next) => {
     );
 
   const validReq = filterObj(req.body, 'name', 'email');
+  if (req.file) validReq.photo = req.file.filename;
 
   const updatedUser = await User.findByIdAndUpdate(req.user.id, validReq, {
     new: true,
